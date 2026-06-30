@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useLoaderData } from 'react-router-dom';
 import { getMenu } from '../../services/apiRestaurant';
 import MenuItem from './MenuItem';
@@ -6,11 +7,19 @@ function Menu() {
   const menu = useLoaderData();
 
   return (
-    <ul className="divide-y divide-stone-200 px-2">
+    <motion.ul
+      className="space-y-3 px-1 py-4"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: {},
+        visible: { transition: { staggerChildren: 0.06 } },
+      }}
+    >
       {menu.map((pizza) => (
         <MenuItem pizza={pizza} key={pizza.id} />
       ))}
-    </ul>
+    </motion.ul>
   );
 }
 
