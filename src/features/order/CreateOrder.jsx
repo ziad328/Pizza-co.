@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Form, redirect, useActionData, useNavigation } from 'react-router-dom';
 import { createOrder } from '../../services/apiRestaurant';
@@ -40,13 +41,23 @@ function CreateOrder() {
   if (!cart.length) return <EmptyCart />;
 
   return (
-    <div className="px-4 py-6">
-      <h2 className="mb-8 text-xl font-semibold">Ready to order? Let's go!</h2>
+    <motion.div
+      className="px-2 py-6 sm:px-4"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+    >
+      <h2 className="mb-6 text-xl font-bold tracking-tight text-stone-900">
+        Ready to order? Let&apos;s go! 🚀
+      </h2>
 
       {/* <Form method="POST" action="/order/new"> */}
-      <Form method="POST">
-        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="sm:basis-40">First Name</label>
+      <Form method="POST" className="space-y-5">
+        {/* Name */}
+        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
+          <label className="text-sm font-medium text-stone-600 sm:basis-40">
+            First Name
+          </label>
           <input
             className="input grow"
             type="text"
@@ -56,20 +67,26 @@ function CreateOrder() {
           />
         </div>
 
-        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="sm:basis-40">Phone number</label>
+        {/* Phone */}
+        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
+          <label className="text-sm font-medium text-stone-600 sm:basis-40">
+            Phone number
+          </label>
           <div className="grow">
             <input className="input w-full" type="tel" name="phone" required />
             {formErrors?.phone && (
-              <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
-                {formErrors.phone}
+              <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-xs font-medium text-red-600 ring-1 ring-red-200">
+                ⚠️ {formErrors.phone}
               </p>
             )}
           </div>
         </div>
 
-        <div className="relative mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="sm:basis-40">Address</label>
+        {/* Address */}
+        <div className="relative flex flex-col gap-1.5 sm:flex-row sm:items-center">
+          <label className="text-sm font-medium text-stone-600 sm:basis-40">
+            Address
+          </label>
           <div className="grow">
             <input
               className="input w-full"
@@ -80,8 +97,8 @@ function CreateOrder() {
               required
             />
             {addressStatus === 'error' && (
-              <p className="mt-2 rounded-md bg-red-100 p-2 text-xs text-red-700">
-                {errorAddress}
+              <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-xs font-medium text-red-600 ring-1 ring-red-200">
+                ⚠️ {errorAddress}
               </p>
             )}
           </div>
@@ -96,27 +113,47 @@ function CreateOrder() {
                   dispatch(fetchAddress());
                 }}
               >
-                Get position
+                {isLoadingAddress ? '...' : '📍 Locate me'}
               </Button>
             </span>
           )}
         </div>
 
-        <div className="mb-12 flex items-center gap-5">
+        {/* Priority toggle */}
+        <div className="flex items-center gap-4 rounded-2xl bg-yellow-50 px-5 py-4 ring-1 ring-yellow-200">
           <input
-            className="h-6 w-6 accent-yellow-400 focus:outline-none focus:ring focus:ring-yellow-400 focus:ring-offset-2"
+            className="h-5 w-5 cursor-pointer accent-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2"
             type="checkbox"
             name="priority"
             id="priority"
             value={withPriority}
             onChange={(e) => setWithPriority(e.target.checked)}
           />
-          <label htmlFor="priority" className="font-medium">
-            Want to yo give your order priority?
-          </label>
+          <div>
+            <label htmlFor="priority" className="cursor-pointer font-semibold text-stone-800">
+              Priority delivery (+20%)
+            </label>
+            <p className="text-xs text-stone-500">
+              Move your order to the front of the queue
+            </p>
+          </div>
+          {withPriority && (
+            <span className="ml-auto text-sm font-bold text-yellow-600">
+              +{formatCurrency(priorityPrice)}
+            </span>
+          )}
         </div>
 
-        <div>
+        {/* Order summary + submit */}
+        <div className="rounded-2xl bg-stone-900 px-5 py-4 text-stone-100">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="text-sm text-stone-400 uppercase tracking-widest">
+              Order total
+            </span>
+            <span className="text-lg font-bold text-yellow-400">
+              {formatCurrency(totalPrice)}
+            </span>
+          </div>
           <input type="hidden" name="cart" value={JSON.stringify(cart)} />
           <input
             type="hidden"
@@ -127,15 +164,14 @@ function CreateOrder() {
                 : ''
             }
           />
-
           <Button disabled={isSubmitting || isLoadingAddress} type="primary">
             {isSubmitting
-              ? 'Placing order....'
-              : `Order now from ${formatCurrency(totalPrice)}`}
+              ? 'Placing order...'
+              : `Order now for ${formatCurrency(totalPrice)}`}
           </Button>
         </div>
       </Form>
-    </div>
+    </motion.div>
   );
 }
 
