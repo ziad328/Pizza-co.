@@ -43,7 +43,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+], { basename: '/Pizza-co./' });
 
 function App() {
   return <RouterProvider router={router} />;
